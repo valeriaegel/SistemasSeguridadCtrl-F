@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { UserButton, Show } from '@clerk/nextjs';
+import { UserButton, useUser, useAuth } from '@clerk/nextjs';
 
 const NavLink = ({ href, children }: { href: string; children: React.ReactNode }) => {
   const pathname = usePathname();
@@ -23,23 +23,34 @@ const NavLink = ({ href, children }: { href: string; children: React.ReactNode }
 };
 
 export function Header() {
+  const { isLoaded, userId } = useAuth();
+  const { user } = useUser();
+  
+  // Si Clerk no cargó todavía, no mostramos nada para evitar saltos visuales
+  if (!isLoaded || !userId) return null;
+
+  // Extraemos el rol. Si no existe, por defecto es student.
+  const role = (user?.publicMetadata as any)?.role || 'student';
+
   return (
-    <Show when="signed-in">
-      <header className="flex items-center justify-between px-4 sm:px-6 py-3 border-b border-zinc-200 dark:border-zinc-800 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md shrink-0 z-20 w-full">
-        <div className="flex items-center gap-4">
-          <h1 className="text-sm font-semibold tracking-wide text-zinc-800 dark:text-zinc-200 uppercase">
-            Secure Campus IA
-          </h1>
-          <nav className="flex items-center gap-2">
-            <NavLink href="/">Chat</NavLink>
+    <header className="flex items-center justify-between px-4 sm:px-6 py-3 border-b border-zinc-200 dark:border-zinc-800 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md shrink-0 z-20 w-full">
+      <div className="flex items-center gap-4">
+        <h1 className="text-sm font-semibold tracking-wide text-zinc-800 dark:text-zinc-200 uppercase">
+          Secure Campus IA
+        </h1>
+        <nav className="flex items-center gap-2">
+          <NavLink href="/">Chat</NavLink>
+          
+          {/* Lógica de Roles: Solo docentes y admins ven la lista */}
+          {role !== 'student' && (
             <NavLink href="/students">Estudiantes</NavLink>
-          </nav>
-        </div>
-        
-        <div className="flex items-center gap-4 h-10">
-          <UserButton />
-        </div>
-      </header>
-    </Show>
+          )}
+        </nav>
+      </div>
+      
+      <div className="flex items-center gap-4 h-10">
+        <UserButton />
+      </div>
+    </header>
   );
 }

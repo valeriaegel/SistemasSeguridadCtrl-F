@@ -1,30 +1,26 @@
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
 import { NextResponse } from 'next/server'
 
-const isPublicRoute = createRouteMatcher(['/','/sign-in(.*)', '/sign-up(.*)', '/api/webhooks(.*)']) // <-- Agregamos el webhook a públicas
-const isAdminRoute = createRouteMatcher(['/admin(.*)'])
-const isTeacherRoute = createRouteMatcher(['/teacher(.*)'])
-const isStudentRoute = createRouteMatcher(['/student(.*)'])
-
+// 1. Definimos las rutas. Asegurate de que coincidan con tus carpetas en /app
+const isPublicRoute = createRouteMatcher(['/', '/sign-in(.*)', '/sign-up(.*)', '/api/webhooks(.*)'])
+const isStudentsDirectoryRoute = createRouteMatcher(['/students(.*)']) 
 export default clerkMiddleware(async (auth, req) => {
- 
   const { userId, sessionClaims } = await auth()
 
-  // Si no es ruta pública, Clerk se encarga de protegerla automáticamente
+  // Protección de rutas privadas
   if (!isPublicRoute(req)) {
     await auth.protect()
   }
 
-  const role = sessionClaims?.metadata?.role
+  // Extraemos el rol 
+  const role = (sessionClaims?.metadata as any)?.role
 
-  if (isAdminRoute(req) && role !== 'admin') {
-    return NextResponse.redirect(new URL('/', req.url))
-  }
-  if (isTeacherRoute(req) && role !== 'teacher' && role !== 'admin') {
-    return NextResponse.redirect(new URL('/', req.url))
-  }
-  if (isStudentRoute(req) && role !== 'student' && role !== 'admin') {
-    return NextResponse.redirect(new URL('/', req.url))
+  // Si alguien intenta entrar al directorio de estudiantes
+  if (isStudentsDirectoryRoute(req)) {
+    // Si NO es admin Y tampoco es teacher no permite el acceso
+    if (role !== 'admin' && role !== 'teacher') {
+      return NextResponse.redirect(new URL('/', req.url))
+    }
   }
 
   return NextResponse.next()
