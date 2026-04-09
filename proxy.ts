@@ -1,14 +1,16 @@
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
 import { NextResponse } from 'next/server'
 
-const isPublicRoute = createRouteMatcher(['/sign-in(.*)', '/sign-up(.*)', '/api/webhooks(.*)']) // <-- Agregamos el webhook a públicas
+const isPublicRoute = createRouteMatcher(['/','/sign-in(.*)', '/sign-up(.*)', '/api/webhooks(.*)']) // <-- Agregamos el webhook a públicas
 const isAdminRoute = createRouteMatcher(['/admin(.*)'])
 const isTeacherRoute = createRouteMatcher(['/teacher(.*)'])
 const isStudentRoute = createRouteMatcher(['/student(.*)'])
 
 export default clerkMiddleware(async (auth, req) => {
+ 
   const { userId, sessionClaims } = await auth()
 
+  // Si no es ruta pública, Clerk se encarga de protegerla automáticamente
   if (!isPublicRoute(req)) {
     await auth.protect()
   }

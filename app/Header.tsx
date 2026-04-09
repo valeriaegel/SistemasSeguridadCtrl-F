@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ClerkProvider, Show, SignInButton, SignUpButton, UserButton } from '@clerk/nextjs'
+import { UserButton, Show } from '@clerk/nextjs';
 
 const NavLink = ({ href, children }: { href: string; children: React.ReactNode }) => {
   const pathname = usePathname();
@@ -23,31 +23,23 @@ const NavLink = ({ href, children }: { href: string; children: React.ReactNode }
 };
 
 export function Header() {
-
   return (
-    <header className="flex items-center justify-between px-4 sm:px-6 py-3 border-b border-zinc-200 dark:border-zinc-800 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md shrink-0 z-20 w-full">
-      <div className="flex items-center gap-4">
-        <h1 className="text-sm font-semibold tracking-wide text-zinc-800 dark:text-zinc-200 uppercase">
-          Secure Campus IA
-        </h1>
-        <nav className="flex items-center gap-2">
-          <NavLink href="/">Chat</NavLink>
-          <NavLink href="/students">Estudiantes</NavLink>
-        </nav>
-      </div>
-       <ClerkProvider>
-                  <Show when="signed-out">
-                    <SignInButton />
-                    <SignUpButton>
-                      <button className="bg-[#6c47ff] text-white rounded-full font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 cursor-pointer">
-                        Sign Up
-                      </button>
-                    </SignUpButton>
-                  </Show>
-                  <Show when="signed-in">
-                    <UserButton />
-                  </Show>
-        </ClerkProvider>
-    </header>
+    <Show when="signed-in">
+      <header className="flex items-center justify-between px-4 sm:px-6 py-3 border-b border-zinc-200 dark:border-zinc-800 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md shrink-0 z-20 w-full">
+        <div className="flex items-center gap-4">
+          <h1 className="text-sm font-semibold tracking-wide text-zinc-800 dark:text-zinc-200 uppercase">
+            Secure Campus IA
+          </h1>
+          <nav className="flex items-center gap-2">
+            <NavLink href="/">Chat</NavLink>
+            <NavLink href="/students">Estudiantes</NavLink>
+          </nav>
+        </div>
+        
+        <div className="flex items-center gap-4 h-10">
+          <UserButton />
+        </div>
+      </header>
+    </Show>
   );
 }
