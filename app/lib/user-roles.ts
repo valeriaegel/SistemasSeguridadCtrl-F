@@ -1,6 +1,5 @@
 import { clerkClient } from '@clerk/nextjs/server'
-
-export type UserRole = 'student' | 'teacher' | 'admin'
+import { UserRole } from './roles'
 
 export async function assignUserRole(userId: string, role: UserRole) {
   const client = await clerkClient()
@@ -17,7 +16,6 @@ export async function getUserRole(userId: string): Promise<UserRole | null> {
   return (user.publicMetadata?.role as UserRole) ?? null
 }
 
-//Luego puedes importarlo donde lo necesites:
+//Luego puedes importarlo donde sea necesario
 //import { assignUserRole } from '@/lib/user-roles'
-
 //await assignUserRole('user_123', 'student')

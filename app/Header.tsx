@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { UserButton, useUser, useAuth } from '@clerk/nextjs';
+import { PERMISSIONS, hasPermission, UserRole } from './lib/roles';  // Importamos  roles y utilidades de permisos
 
 const NavLink = ({ href, children }: { href: string; children: React.ReactNode }) => {
   const pathname = usePathname();
@@ -29,8 +30,13 @@ export function Header() {
   // Si Clerk no cargó todavía, no mostramos nada para evitar saltos visuales
   if (!isLoaded || !userId) return null;
 
-  // Extraemos el rol. Si no existe, por defecto es student.
-  const role = (user?.publicMetadata as any)?.role || 'student';
+  // 2. Extraemos el rol de los metadatos del usuario
+  const role = (user?.publicMetadata as any)?.role as UserRole;
+
+  // 3. Verificamos si tiene el permiso necesario.
+  const canViewStudents = 
+    hasPermission(role, PERMISSIONS.VIEW_CLASS_STUDENTS) || 
+    hasPermission(role, PERMISSIONS.VIEW_ALL_STUDENTS);
 
   return (
     <header className="flex items-center justify-between px-4 sm:px-6 py-3 border-b border-zinc-200 dark:border-zinc-800 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md shrink-0 z-20 w-full">
@@ -41,8 +47,8 @@ export function Header() {
         <nav className="flex items-center gap-2">
           <NavLink href="/">Chat</NavLink>
           
-          {/* Lógica de Roles: Solo docentes y admins ven la lista */}
-          {role !== 'student' && (
+          {/* 4. Usamos la variable de permiso limpio que creamos arriba */}
+          {canViewStudents && (
             <NavLink href="/students">Estudiantes</NavLink>
           )}
         </nav>

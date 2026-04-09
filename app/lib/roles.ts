@@ -47,3 +47,9 @@ export const rolePermissions: Record<UserRole, string[]> = {
     PERMISSIONS.ADMIN_LOGS,
   ],
 }
+
+// Exportamos una función de utilidad para verificar permisos de forma sencilla en cualquier parte del código
+export function hasPermission(userRole: UserRole | null | undefined, permission: string) {
+  if (!userRole) return false;
+  return rolePermissions[userRole]?.includes(permission) ?? false;
+}

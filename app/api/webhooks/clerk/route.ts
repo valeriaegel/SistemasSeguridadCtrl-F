@@ -2,6 +2,7 @@ import { Webhook } from 'svix'
 import { headers } from 'next/headers'
 import { WebhookEvent } from '@clerk/nextjs/server'
 import { assignUserRole } from '../../../lib/user-roles'
+import { ROLES } from '@/app/lib/roles'
 
 export async function POST(req: Request) {
   // Vas a obtener este secreto desde el dashboard de Clerk en el siguiente paso
@@ -46,7 +47,6 @@ export async function POST(req: Request) {
     })
   }
 
-  // ¡AQUÍ ESTÁ LA MAGIA!
   const eventType = evt.type
 
   if (eventType === 'user.created') {
@@ -56,8 +56,8 @@ export async function POST(req: Request) {
     
     try {
       // Usamos tu función para asignarle 'student' en los metadatos
-      await assignUserRole(id, 'student')
-      console.log(`Rol 'student' asignado con éxito al usuario ${id}`)
+      await assignUserRole(id, ROLES.STUDENT)
+      console.log(`Rol '${ROLES.STUDENT}' asignado con éxito al usuario ${id}`)
     } catch (error) {
       console.error('Error al asignar el rol:', error)
       return new Response('Error al asignar el rol', { status: 500 })
