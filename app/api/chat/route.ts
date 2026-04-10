@@ -32,7 +32,6 @@ const addMessageCommandHandler = async (request: NextRequest): Promise<NextRespo
 
 
         // Si el código llega hasta acá, el usuario es legítimo y tiene permiso.
-        // Ejecutamos tu lógica original:
         const handler = new AddMessageHandler()
         
         const command: AddMessageCommand = await request.json()

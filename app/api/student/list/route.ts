@@ -27,10 +27,7 @@ const getStudentsListQueryHandler = async (request: NextRequest): Promise<NextRe
         // FIN DEL BLOQUE DE SEGURIDAD 
 
         const handler = new GetStudentsListHandler()
-        
-        // TIP DE ARQUITECTURA: Como usas CQRS, es una excelente práctica
-        // pasarle el rol o el ID al Query, para que tu Handler sepa qué devolver.
-        // Ej: Si es admin devuelve TODOS, si es teacher devuelve solo LOS SUYOS.
+ 
         const query: GetStudentsListQuery = {
             // requesterId: userId,
             // requesterRole: role
