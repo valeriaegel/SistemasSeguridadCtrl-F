@@ -11,17 +11,17 @@ export const PERMISSIONS = {
   CHAT_AI_BASIC: 'chat:ai:basic',
   CHAT_AI_FULL: 'chat:ai:full',
   CHAT_AI_CONFIG: 'chat:ai:config',
-  
+
   // Directorio
   VIEW_OWN_PROFILE: 'directory:view:own',
   VIEW_CLASS_STUDENTS: 'directory:view:class',
   VIEW_ALL_STUDENTS: 'directory:view:all',
-  
+
   // Acceso a Datos
   ACCESS_OWN_DATA: 'data:access:own',
   ACCESS_CLASS_DATA: 'data:access:class',
   ACCESS_ALL_DATA: 'data:access:all',
-  
+
   // Administración
   ADMIN_STUDENTS: 'admin:students',
   ADMIN_LOGS: 'admin:logs',

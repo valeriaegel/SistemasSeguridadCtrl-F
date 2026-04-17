@@ -38,6 +38,8 @@ export function Header() {
     hasPermission(role, PERMISSIONS.VIEW_CLASS_STUDENTS) || 
     hasPermission(role, PERMISSIONS.VIEW_ALL_STUDENTS);
 
+  const canAdmin = hasPermission(role, PERMISSIONS.ADMIN_STUDENTS);
+
   return (
     <header className="flex items-center justify-between px-4 sm:px-6 py-3 border-b border-zinc-200 dark:border-zinc-800 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md shrink-0 z-20 w-full">
       <div className="flex items-center gap-4">
@@ -51,10 +53,15 @@ export function Header() {
           {canViewStudents && (
             <NavLink href="/students">Estudiantes</NavLink>
           )}
+
+          {canAdmin && (
+            <NavLink href="/admin/users">Gestión de Usuarios</NavLink>
+          )}
         </nav>
       </div>
       
       <div className="flex items-center gap-4 h-10">
+        <NavLink href="/profile">Mi Perfil</NavLink>
         <UserButton />
       </div>
     </header>

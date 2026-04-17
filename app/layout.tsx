@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { ClerkProvider } from '@clerk/nextjs';
-import { Header } from "@/app/Header"; // Asegúrense de que esta ruta sea la correcta
+import { Header } from "@/app/Header";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -25,7 +25,6 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    // ClerkProvider envuelve toda la aplicación
     <ClerkProvider>
       <html
         lang="en"
