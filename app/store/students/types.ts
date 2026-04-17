@@ -1,8 +1,9 @@
 
 export interface Student {
-  id: number
+  id: string | number
   name: string
   email: string
+  imageUrl?: string
   active: boolean
 }
 

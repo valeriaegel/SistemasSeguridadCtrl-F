@@ -4,7 +4,6 @@ import { hasPermission, PERMISSIONS, UserRole } from '@/app/lib/roles'
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const { userId } = await auth()
-
   if (!userId) {
     redirect('/')
   }

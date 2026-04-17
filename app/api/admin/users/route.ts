@@ -50,8 +50,6 @@ export async function PATCH(req: Request) {
   }
 
   let publicMetadata: any = { role: newRole }
-
-  // Cleanup request if it's being approved or dismissed implicitly
   if (approveRequest || newRole !== targetRole) {
     publicMetadata.roleRequest = null
   }

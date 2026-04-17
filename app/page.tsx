@@ -36,9 +36,7 @@ export default function Home() {
   return (
     <>
       <Show when="signed-out">
-        {/* Vista si NO hay un usuario logueado (Landing) */}
         <main className="landing-container w-full h-full relative overflow-hidden flex items-center justify-center bg-[#050B14]">
-          {/* Background Effects */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
             <div className="absolute top-[-20%] left-[-10%] w-[60vw] h-[60vw] opacity-20 bg-blue-600 blur-[120px] rounded-full mix-blend-screen" style={{ animation: 'blob 8s infinite alternate' }}></div>
             <div className="absolute bottom-[-10%] right-[-10%] w-[50vw] h-[50vw] opacity-20 bg-emerald-600 blur-[100px] rounded-full mix-blend-screen" style={{ animation: 'blob 10s infinite alternate-reverse' }}></div>
@@ -47,10 +45,8 @@ export default function Home() {
             <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCI+CjxwYXRoIGQ9Ik0wIDBsNDAgNDBNMCA0MGw0MCA0MCIgc3Ryb2tlPSJyZ2JhKDI1NSwyNTUsMjU1LDAuMDMpIiBzdHJva2Utd2lkdGg9IjEiIGZpbGw9Im5vbmUiLz4KPC9zdmc+')] opacity-50 z-0"></div>
           </div>
 
-          {/* Content */}
           <div className="relative z-10 flex flex-col items-center justify-center flex-1 w-full max-w-4xl px-4 sm:px-6 text-center space-y-10">
 
-            {/* Logo / Shield Icon */}
             <div className="w-32 h-32 sm:w-44 sm:h-44 mb-2 rounded-2xl flex items-center justify-center shadow-[0_0_30px_rgba(37,99,235,0.15)] overflow-hidden scale-110">
               <img src="/logo.png" alt="Secure Campus IA Logo" className="w-full h-full object-contain" />
             </div>
@@ -93,11 +89,9 @@ export default function Home() {
       </Show>
 
       <Show when="signed-in">
-        {/* 3. Vista si el usuario SÍ está logueado (Chat) */}
         <main className="flex flex-col flex-1 items-center bg-zinc-50 font-sans dark:bg-zinc-950 h-full w-full overflow-hidden">
           <div className="flex flex-col w-full max-w-3xl flex-1 bg-white dark:bg-zinc-900/50 shadow-sm border-x border-zinc-200 dark:border-zinc-800 overflow-hidden relative">
 
-            {/* Toolbar de Chat */}
             {conversation.length > 0 && (
               <div className="flex items-center justify-between px-4 py-2 border-b border-zinc-100 dark:border-zinc-800/50 bg-zinc-50/80 dark:bg-zinc-900/80 backdrop-blur-md z-10 shrink-0">
                 <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
@@ -116,7 +110,6 @@ export default function Home() {
               </div>
             )}
 
-            {/* Área de Mensajes */}
             <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6">
               {conversation.length === 0 ? (
                 <div className="h-full flex items-center justify-center text-zinc-400 dark:text-zinc-500 text-sm text-center">
@@ -144,7 +137,6 @@ export default function Home() {
               <div ref={messagesEndRef} />
             </div>
 
-            {/* Input de Mensaje */}
             <form onSubmit={handleSubmit} className="p-4 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md border-t border-zinc-200 dark:border-zinc-800 flex gap-2 shrink-0 z-20">
               <input
                 type="text"

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { UserButton, useUser, useAuth } from '@clerk/nextjs';
-import { PERMISSIONS, hasPermission, UserRole } from './lib/roles';  // Importamos  roles y utilidades de permisos
+import { PERMISSIONS, hasPermission, UserRole } from './lib/roles';
 
 const NavLink = ({ href, children }: { href: string; children: React.ReactNode }) => {
   const pathname = usePathname();
@@ -12,11 +12,10 @@ const NavLink = ({ href, children }: { href: string; children: React.ReactNode }
   return (
     <Link
       href={href}
-      className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-        isActive
+      className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${isActive
           ? "bg-zinc-100 text-zinc-900 dark:bg-zinc-800 dark:text-zinc-50"
           : "text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50"
-      }`}
+        }`}
     >
       {children}
     </Link>
@@ -26,16 +25,13 @@ const NavLink = ({ href, children }: { href: string; children: React.ReactNode }
 export function Header() {
   const { isLoaded, userId } = useAuth();
   const { user } = useUser();
-  
-  // Si Clerk no cargó todavía, no mostramos nada para evitar saltos visuales
+
   if (!isLoaded || !userId) return null;
 
-  // 2. Extraemos el rol de los metadatos del usuario
   const role = (user?.publicMetadata as any)?.role as UserRole;
 
-  // 3. Verificamos si tiene el permiso necesario.
-  const canViewStudents = 
-    hasPermission(role, PERMISSIONS.VIEW_CLASS_STUDENTS) || 
+  const canViewStudents =
+    hasPermission(role, PERMISSIONS.VIEW_CLASS_STUDENTS) ||
     hasPermission(role, PERMISSIONS.VIEW_ALL_STUDENTS);
 
   const canAdmin = hasPermission(role, PERMISSIONS.ADMIN_STUDENTS);
@@ -48,8 +44,7 @@ export function Header() {
         </h1>
         <nav className="flex items-center gap-2">
           <NavLink href="/">Chat</NavLink>
-          
-          {/* 4. Usamos la variable de permiso limpio que creamos arriba */}
+
           {canViewStudents && (
             <NavLink href="/students">Estudiantes</NavLink>
           )}
@@ -59,7 +54,7 @@ export function Header() {
           )}
         </nav>
       </div>
-      
+
       <div className="flex items-center gap-4 h-10">
         <NavLink href="/profile">Mi Perfil</NavLink>
         <UserButton />

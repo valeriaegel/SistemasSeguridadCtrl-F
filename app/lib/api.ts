@@ -19,12 +19,10 @@ async function request<T>(url: string, options: RequestInit): Promise<T> {
     });
 
     if (!response.ok) {
-        // Intentamos obtener el mensaje de error del backend, si no existe usamos el statusText
         const errorData = await response.json().catch(() => ({}));
         throw new ApiError(response.status, errorData.message || response.statusText, errorData);
     }
 
-    // Manejo de respuestas vacías (ej: 204 No Content)
     if (response.status === 204) {
         return {} as T;
     }

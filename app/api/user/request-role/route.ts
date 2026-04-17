@@ -14,9 +14,7 @@ export async function POST(req: Request) {
     }
 
     const client = await clerkClient()
-    
-    // Almacenamos la solicitud en los publicMetadata para que el admin pueda verla
-    // tal como sugeriste para la bandeja de entrada interna.
+
     await client.users.updateUserMetadata(userId, {
       publicMetadata: {
         roleRequest: role

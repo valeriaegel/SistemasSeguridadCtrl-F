@@ -15,7 +15,3 @@ export async function getUserRole(userId: string): Promise<UserRole | null> {
   const user = await client.users.getUser(userId)
   return (user.publicMetadata?.role as UserRole) ?? null
 }
-
-//Luego puedes importarlo donde sea necesario
-//import { assignUserRole } from '@/lib/user-roles'
-//await assignUserRole('user_123', 'student')

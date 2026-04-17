@@ -35,7 +35,6 @@ export default function ProfilePage() {
 
       if (!res.ok) throw new Error("Failed to request role");
 
-      // Update local session to reflect the request immediately
       await user.reload();
       setRequestStatus("success");
     } catch (e) {

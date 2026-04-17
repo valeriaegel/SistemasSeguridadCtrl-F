@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { auth } from '@clerk/nextjs/server' // <-- 1. Autenticación
+import { auth, clerkClient } from '@clerk/nextjs/server' // <-- 1. Autenticación
 import { PERMISSIONS, hasPermission, UserRole } from '../../../lib/roles' // <-- 2. Autorización
-import { GetStudentsListHandler, GetStudentsListQuery } from '@/application/query/GetStudentsListHandler'
 
 const getStudentsListQueryHandler = async (request: NextRequest): Promise<NextResponse> => {
     try {
@@ -26,16 +25,24 @@ const getStudentsListQueryHandler = async (request: NextRequest): Promise<NextRe
         }
         // FIN DEL BLOQUE DE SEGURIDAD 
 
-        const handler = new GetStudentsListHandler()
- 
-        const query: GetStudentsListQuery = {
-            // requesterId: userId,
-            // requesterRole: role
-        }
+        const client = await clerkClient()
+        const users = await client.users.getUserList()
         
-        const response = await handler.handle(query)
+        // Filtrar usuarios: Aquellos que tengan el rol expreso 'student' o que no tengan rol (por defecto)
+        const studentsList = users.data
+            .filter(user => {
+                const userRole = (user.publicMetadata?.role as string) || 'student'
+                return userRole === 'student'
+            })
+            .map(user => ({
+                id: user.id,
+                name: `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.username || 'Usuario',
+                email: user.emailAddresses[0]?.emailAddress || '',
+                imageUrl: user.imageUrl,
+                active: true
+            }))
 
-        return NextResponse.json(response)
+        return NextResponse.json({ list: studentsList })
         
     } catch (error) {
         console.error("Error al obtener la lista de estudiantes:", error)
