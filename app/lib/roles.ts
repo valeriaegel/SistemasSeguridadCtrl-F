@@ -9,12 +9,10 @@ export type UserRole = typeof ROLES[keyof typeof ROLES]
 export const PERMISSIONS = {
   // Chat IA
   CHAT_AI_BASIC: 'chat:ai:basic',
-  CHAT_AI_FULL: 'chat:ai:full',
   CHAT_AI_CONFIG: 'chat:ai:config',
   
   // Directorio
   VIEW_OWN_PROFILE: 'directory:view:own',
-  VIEW_CLASS_STUDENTS: 'directory:view:class',
   VIEW_ALL_STUDENTS: 'directory:view:all',
   
   // Acceso a Datos
@@ -35,7 +33,6 @@ export const rolePermissions: Record<UserRole, string[]> = {
   ],
   [ROLES.TEACHER]: [
     PERMISSIONS.CHAT_AI_BASIC,
-    PERMISSIONS.VIEW_CLASS_STUDENTS,
     PERMISSIONS.ACCESS_CLASS_DATA,
   ],
   [ROLES.ADMIN]: [
