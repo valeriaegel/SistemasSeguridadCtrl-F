@@ -1,10 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { auth, clerkClient } from '@clerk/nextjs/server' // <-- 1. Autenticación
-import { PERMISSIONS, hasPermission, UserRole } from '../../../lib/roles' // <-- 2. Autorización
+import { auth, clerkClient } from '@clerk/nextjs/server' 
+import { PERMISSIONS, hasPermission, UserRole } from '../../../lib/roles' 
 
 const getStudentsListQueryHandler = async (request: NextRequest): Promise<NextResponse> => {
     try {
-        // BLOQUE DE SEGURIDAD
         const { userId, sessionClaims } = await auth()
 
         if (!userId) {
@@ -13,7 +12,6 @@ const getStudentsListQueryHandler = async (request: NextRequest): Promise<NextRe
 
         const role = sessionClaims?.metadata?.role as UserRole
 
-        // Verificamos si tiene alguno de los dos permisos válidos para listar alumnos
         const isTeacher = hasPermission(role, PERMISSIONS.VIEW_CLASS_STUDENTS)
         const isAdmin = hasPermission(role, PERMISSIONS.VIEW_ALL_STUDENTS)
 
@@ -23,12 +21,10 @@ const getStudentsListQueryHandler = async (request: NextRequest): Promise<NextRe
                 { status: 403 }
             )
         }
-        // FIN DEL BLOQUE DE SEGURIDAD 
 
         const client = await clerkClient()
         const users = await client.users.getUserList()
         
-        // Filtrar usuarios: Aquellos que tengan el rol expreso 'student' o que no tengan rol (por defecto)
         const studentsList = users.data
             .filter(user => {
                 const userRole = (user.publicMetadata?.role as string) || 'student'
