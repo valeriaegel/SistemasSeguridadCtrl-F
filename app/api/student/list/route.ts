@@ -15,7 +15,7 @@ const getStudentsListQueryHandler = async (request: NextRequest): Promise<NextRe
         const role = sessionClaims?.metadata?.role as UserRole
 
         // Verificamos si tiene alguno de los dos permisos válidos para listar alumnos
-        const isTeacher = hasPermission(role, PERMISSIONS.VIEW_CLASS_STUDENTS)
+        const isTeacher = hasPermission(role, PERMISSIONS.VIEW_ALL_STUDENTS)
         const isAdmin = hasPermission(role, PERMISSIONS.VIEW_ALL_STUDENTS)
 
         if (!isTeacher && !isAdmin) {
