@@ -35,7 +35,7 @@ export function Header() {
 
   // 3. Verificamos si tiene el permiso necesario.
   const canViewStudents = 
-    hasPermission(role, PERMISSIONS.VIEW_CLASS_STUDENTS) || 
+    hasPermission(role, PERMISSIONS.VIEW_ALL_STUDENTS) || 
     hasPermission(role, PERMISSIONS.VIEW_ALL_STUDENTS);
 
   return (
