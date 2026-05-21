@@ -15,16 +15,23 @@ Asegúrate de tener instalado en tu computadora:
 ### Instalación y ejecución
 
 1. **Instala las dependencias** del proyecto. Abre tu terminal en la carpeta raíz del proyecto y ejecuta:
-   ```bash
+```bash
    npm install
-   ```
+```
 
-2. **Inicia el servidor de desarrollo** localmente:
-   ```bash
+2. **Configura las variables de entorno.** Crea un archivo `.env.local` en la raíz del proyecto con las siguientes variables:
+```env
+   API_KEY=tu_api_key_de_groq
+   NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=tu_clave_publica_de_clerk
+   CLERK_SECRET_KEY=tu_clave_secreta_de_clerk
+```
+
+3. **Inicia el servidor de desarrollo** localmente:
+```bash
    npm run dev
-   ```
+```
 
-3. **Abre la aplicación:** Ve a tu navegador y entra a http://localhost:3000. ¡Deberías ver la interfaz del chat!
+4. **Abre la aplicación:** Ve a tu navegador y entra a http://localhost:3000.
 
 ---
 
@@ -34,16 +41,50 @@ Asegúrate de tener instalado en tu computadora:
 - **React:** Para construir la interfaz de usuario.
 - **Tailwind CSS:** Para los estilos rápidos, responsivos y el soporte de "Modo Oscuro".
 - **Zustand:** Para manejar el estado global de la aplicación (como guardar el historial de la conversación).
+- **Clerk:** Para la autenticación y autorización de usuarios mediante OIDC/OAuth.
+- **Groq SDK:** Para la integración con el modelo de lenguaje `llama-3.1-8b-instant`.
 
 ---
 
-## 📂 Estructura clave para estudiantes
+## 🔐 Medidas de Seguridad Implementadas
 
-Si vas a modificar el código, estos son los archivos y carpetas más importantes que debes conocer:
+### Fase I — Hardening de API & Entorno
 
-- 🖥️ `app/page.tsx`: Es la pantalla principal. Aquí está el diseño del chat (el _Header_, el área de mensajes y el _Input_ para escribir).
-- ⚙️ `app/api/chat/route.ts`: Es el "Backend" de nuestro chat. Esta ruta recibe los mensajes del usuario y es donde deberás conectar la lógica para que la Inteligencia Artificial devuelva una respuesta.
-- 🧠 `app/store/conversation.ts`: Aquí se guarda la memoria de la conversación actual utilizando Zustand.
-- 🪝 `app/hooks/useConversation.ts`: Contiene la lógica que conecta la interfaz gráfica (frontend) con la ruta de la API (backend).
+- **Variables de entorno:** La API Key de Groq nunca está expuesta en el repositorio ni viaja al frontend. Se gestiona exclusivamente desde `.env.local` y se accede únicamente desde el servidor.
+- **Autenticación con Clerk (OIDC):** Todas las rutas de la aplicación están protegidas. Solo los usuarios autenticados pueden acceder al chat.
+- **Autorización por roles (OAuth):** Se implementó un sistema de permisos basado en roles (`UserRole`). El acceso al chat requiere el permiso `CHAT_AI_BASIC`, que se verifica en cada request antes de procesar el mensaje.
 
-> **Tip para el equipo:** Si necesitan modificar cómo se ven los mensajes, revisen `app/page.tsx`. Si necesitan cambiar qué responde la IA, revisen `app/api/chat/route.ts`.
+### Fase II — Configuración WAF Rules
+
+- Se implementaron reglas de Firewall en Vercel para proteger la aplicación contra tráfico malicioso, limitación de requests y bloqueo de rutas sensibles.
+
+### Fase III — Prevención de Prompt Injection
+
+Se diseñó e implementó un sistema de defensa en tres capas dentro de `AddMessageHandler.ts`:
+
+**Capa 1 — Validación estática de input**
+Antes de realizar cualquier llamada a la IA, el mensaje del usuario es analizado mediante:
+- Verificación de longitud máxima (2000 caracteres).
+- Detección de patrones conocidos de ataque mediante expresiones regulares (frases como "ignorá las instrucciones", "act as", "jailbreak", etc.) en español e inglés.
+
+**Capa 2 — LLM Juez**
+Si el mensaje supera la capa 1, se realiza una segunda llamada al modelo con el rol de sistema de seguridad. Analiza semánticamente el mensaje y devuelve un JSON indicando si es seguro o no. Se configura con `temperature: 0` para máximo determinismo.
+
+**Capa 3 — LLM Principal con System Prompt restrictivo**
+Solo si el mensaje pasa las dos capas anteriores, se llama al modelo principal. Este cuenta con un System Prompt que:
+- Limita las respuestas exclusivamente a temas académicos universitarios.
+- Instruye al modelo a ignorar cualquier intento de modificar su rol o comportamiento.
+- Impide la revelación de instrucciones internas.
+
+---
+
+## 📂 Estructura clave del proyecto
+
+- 🖥️ `app/page.tsx`: Pantalla principal con el diseño del chat.
+- ⚙️ `app/api/chat/route.ts`: Backend del chat. Verifica autenticación y autorización antes de procesar cada mensaje.
+- 🔒 `app/lib/roles.ts`: Define los roles y permisos del sistema de autorización.
+- 🧠 `application/command/AddMessageHandler.ts`: Contiene toda la lógica de seguridad contra Prompt Injection y la integración con Groq.
+- 🧠 `app/store/conversation.ts`: Memoria de la conversación actual con Zustand.
+- 🪝 `app/hooks/useConversation.ts`: Conecta la interfaz gráfica con la API.
+
+>
