@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { auth } from '@clerk/nextjs/server' // <-- 1. Autenticación
+import { auth, currentUser } from '@clerk/nextjs/server'
 import { PERMISSIONS, hasPermission, UserRole } from '../../../lib/roles' // <-- 2. Autorización
 import { GetStudentsListHandler, GetStudentsListQuery } from '@/application/query/GetStudentsListHandler'
 
@@ -28,7 +28,9 @@ const getStudentsListQueryHandler = async (request: NextRequest): Promise<NextRe
 
         const handler = new GetStudentsListHandler()
  
-const email = sessionClaims?.email as string ?? ''
+
+const user = await currentUser()
+const email = user?.emailAddresses[0]?.emailAddress ?? ''
 
 const query: GetStudentsListQuery = {
     requesterId: email,
