@@ -8,13 +8,17 @@ export class GetStudentsListHandler {
     }
 
     async handle(query: GetStudentsListQuery): Promise<GetStudentsListResponse> {
-        const students = await this.repository.findAll(query.user)
+      const students = await this.repository.findAll({ 
+    email: query.requesterId, 
+    role: query.requesterRole 
+})
         return { list: students }
     }
 }
 
 export interface GetStudentsListQuery {
-    user: { email: string; role: string }
+    requesterId: string
+    requesterRole: string
 }
 
 export interface GetStudentsListResponse {

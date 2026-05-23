@@ -28,10 +28,12 @@ const getStudentsListQueryHandler = async (request: NextRequest): Promise<NextRe
 
         const handler = new GetStudentsListHandler()
  
-        const query: GetStudentsListQuery = {
-            // requesterId: userId,
-            // requesterRole: role
-        }
+const email = sessionClaims?.email as string ?? ''
+
+const query: GetStudentsListQuery = {
+    requesterId: email,
+    requesterRole: role
+}
         
         const response = await handler.handle(query)
 
