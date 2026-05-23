@@ -6,7 +6,7 @@ export interface StudentRow {
     name: string
     email: string
     active: boolean
-    detail: string | null
+   // detail: string | null
 }
 
 export class StudentRepository {
@@ -15,7 +15,7 @@ export class StudentRepository {
 
         const { data, error } = await supabase
             .from('students')
-            .select('id, name, email, active, detail')
+            .select('id, name, email, active')
             .order('id', { ascending: true })
 
         if (error) {
@@ -25,18 +25,18 @@ export class StudentRepository {
         return data as StudentRow[]
     }        
 
-    async updateDetail(studentId: number, detail: string): Promise<void> {
-        const supabase = getSupabaseClient()
+  //  async updateDetail(studentId: number, detail: string): Promise<void> {
+   //     const supabase = getSupabaseClient()
 
         //vector de ataque
         //X', "name" = 'Hackeado' WHERE 1=1; --
-        const { error } = await supabase.rpc('actualizar_descripcion_vulnerable', {
-            p_estudiante_id: studentId,
-            p_nueva_descripcion: detail
-        });
+//        const { error } = await supabase.rpc('actualizar_descripcion_vulnerable', {
+  //          p_estudiante_id: studentId,
+    //        p_nueva_descripcion: detail
+      //  });
 
-        if (error) {
-            throw new Error(`Error al actualizar detalle del estudiante: ${error.message}`)
-        }
-    }
+ //       if (error) {
+   //         throw new Error(`Error al actualizar detalle del estudiante: ${error.message}`)
+     //   }
+   
 }
