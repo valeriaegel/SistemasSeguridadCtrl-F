@@ -57,7 +57,7 @@ export default function StudentsPage() {
                   </div>
                   <div>
                     {/* ACA DEBERIA PODER ESCRIBIRSE EL DETALLE SEGUN ROLES,  */}
-                    <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">Detalle: {student.detail}</p>
+                    <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">Detalle: {student.detail ?? 'No disponible'}</p>
                   </div>
                 </li>
               ))}

@@ -6,7 +6,7 @@ export interface StudentRow {
     name: string
     email: string
     active: boolean
-    detail: string | null
+    detail?: string | null
 }
 
 export class StudentRepository {
