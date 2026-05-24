@@ -30,5 +30,5 @@ export interface Student {
     name: string
     email: string
     active: boolean
-   
+    detail?: string | null
 }

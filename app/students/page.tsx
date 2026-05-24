@@ -55,6 +55,10 @@ export default function StudentsPage() {
                     <div className="flex-shrink-0 h-12 w-12 rounded-full bg-zinc-200 dark:bg-zinc-700 flex items-center justify-center"><span className="text-lg font-medium text-zinc-600 dark:text-zinc-300">{student.name.charAt(0).toUpperCase()}</span></div>
                     <div><p className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">{student.name}</p><p className="text-sm text-zinc-500 dark:text-zinc-400">{student.email || `ID: ${student.id}`}</p></div>
                   </div>
+                  <div>
+                    {/* ACA DEBERIA PODER ESCRIBIRSE EL DETALLE SEGUN ROLES,  */}
+                    <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">Detalle: {student.detail}</p>
+                  </div>
                 </li>
               ))}
             </ul>

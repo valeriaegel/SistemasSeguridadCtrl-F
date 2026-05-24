@@ -4,6 +4,7 @@ export interface Student {
   name: string
   email: string
   active: boolean
+  detail: string 
 }
 
 export interface StudentsStore {
