@@ -15,7 +15,7 @@ export class StudentRepository {
 
         const { data, error } = await supabase
             .from('students')
-            .select('id, name, email, active')
+            .select('id, name, email, active, detail')
             .order('id', { ascending: true })
 
         if (error) {
