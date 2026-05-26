@@ -64,8 +64,10 @@ export default function StudentsPage() {
                         
                         {/* DNI Viewer */}
                         <div className="mt-2">
-                          <DniViewer studentId={student.id} />
-                        </div>
+                         <Guard permission={PERMISSIONS.STUDENT_DNI_VIEW}>
+                            <DniViewer studentId={student.id} />
+                          </Guard>
+                          </div>
 
                         <Guard permission={PERMISSIONS.STUDENT_DETAIL_EDIT}
                           fallback={student.detail ? (

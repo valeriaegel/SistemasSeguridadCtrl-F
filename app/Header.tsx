@@ -34,9 +34,7 @@ export function Header() {
   const role = (user?.publicMetadata as any)?.role as UserRole;
 
   // 3. Verificamos si tiene el permiso necesario.
-  const canViewStudents = 
-    hasPermission(role, PERMISSIONS.VIEW_ALL_STUDENTS) || 
-    hasPermission(role, PERMISSIONS.VIEW_ALL_STUDENTS);
+  const canViewStudents = hasPermission(role, PERMISSIONS.VIEW_ALL_STUDENTS);
 
   return (
     <header className="flex items-center justify-between px-4 sm:px-6 py-3 border-b border-zinc-200 dark:border-zinc-800 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md shrink-0 z-20 w-full">
