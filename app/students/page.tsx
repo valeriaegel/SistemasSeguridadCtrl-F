@@ -3,11 +3,16 @@
 import { useEffect, useState } from "react"
 import { useStudents } from "@/app/hooks/useStudents"
 import { useStudentsStore, Student } from "@/app/store/students"
+import { StudentDetailEditor } from "@/app/students/components/StudentDetailEditor"
+import { Guard } from "../components/Guard"
+import { DniViewer } from "@/app/students/components/DniViewer"
+import { PERMISSIONS } from "../lib/roles"
 
 export default function StudentsPage() {
-  const { fetchStudents } = useStudents()
+  const { fetchStudents, editStudentDetail } = useStudents()
   const { students } = useStudentsStore()
   const [isLoading, setIsLoading] = useState(true)
+
 
   useEffect(() => {
     const loadStudents = async () => {
@@ -52,12 +57,25 @@ export default function StudentsPage() {
               {students.map((student: Student) => (
                 <li key={student.id} className="p-4 sm:p-6 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors">
                   <div className="flex items-center gap-4">
-                    <div className="flex-shrink-0 h-12 w-12 rounded-full bg-zinc-200 dark:bg-zinc-700 flex items-center justify-center"><span className="text-lg font-medium text-zinc-600 dark:text-zinc-300">{student.name.charAt(0).toUpperCase()}</span></div>
-                    <div><p className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">{student.name}</p><p className="text-sm text-zinc-500 dark:text-zinc-400">{student.email || `ID: ${student.id}`}</p></div>
-                  </div>
-                  <div>
-                    {/* ACA DEBERIA PODER ESCRIBIRSE EL DETALLE SEGUN ROLES,  */}
-                    <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">Detalle: {student.detail ?? 'No disponible'}</p>
+            
+                   <div className="flex-1 min-w-0">
+                        <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">{student.name}</p>
+                        <p className="text-sm text-zinc-500 dark:text-zinc-400">{student.email || `ID: ${student.id}`}</p>
+                        
+                        {/* DNI Viewer */}
+                        <div className="mt-2">
+                          <DniViewer studentId={student.id} />
+                        </div>
+
+                        <Guard permission={PERMISSIONS.STUDENT_DETAIL_EDIT}
+                          fallback={student.detail ? (
+                            <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400 italic leading-relaxed">{student.detail}</p>
+                          ) : null}
+                        >
+                          <StudentDetailEditor student={student} onSave={editStudentDetail} />
+                        </Guard>
+                      </div>
+
                   </div>
                 </li>
               ))}
