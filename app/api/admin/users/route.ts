@@ -1,8 +1,8 @@
 import { auth, clerkClient } from '@clerk/nextjs/server'
 import { NextResponse } from 'next/server'
 import { hasPermission, PERMISSIONS, UserRole } from '@/app/lib/roles'
+import { getSupabaseClient } from '@/infraestructure/database/supabaseClient'
 
-// Verificador de Admin adaptado a la nueva lógica
 async function isAdmin() {
   const { userId } = await auth()
   if (!userId) return false
@@ -45,6 +45,8 @@ export async function PATCH(req: Request) {
 
   const targetUser = await client.users.getUser(targetUserId)
   const targetRole = targetUser.publicMetadata?.role as string
+  const targetEmail = targetUser.emailAddresses[0]?.emailAddress ?? ''
+  const targetName = `${targetUser.firstName ?? ''} ${targetUser.lastName ?? ''}`.trim() || targetEmail
 
   if (targetRole === 'admin') {
     return new NextResponse('No se puede modificar a otro administrador', { status: 403 })
@@ -55,8 +57,45 @@ export async function PATCH(req: Request) {
     publicMetadata.roleRequest = null
   }
 
-  await client.users.updateUserMetadata(targetUserId, {
-    publicMetadata
+  await client.users.updateUserMetadata(targetUserId, { publicMetadata })
+
+  const supabase = getSupabaseClient()
+
+  // Si el nuevo rol es student, insertar/activar en la tabla students
+  if (newRole === 'student') {
+    const { error } = await supabase
+      .from('students')
+      .upsert({ name: targetName, email: targetEmail, active: true }, { onConflict: 'email' })
+
+    if (error) {
+      console.error('Error al insertar/activar estudiante:', error.message)
+    }
+  }
+
+  // Si el nuevo rol NO es student, desactivarlo en la tabla students
+  if (newRole !== 'student') {
+    const { error } = await supabase
+      .from('students')
+      .update({ active: false })
+      .eq('email', targetEmail)
+
+    if (error) {
+      console.error('Error al desactivar estudiante:', error.message)
+    }
+  }
+
+  // Registrar el cambio de rol en audit_logs
+  const { userId: adminId } = await auth()
+  const adminUser = await client.users.getUser(adminId!)
+  const adminEmail = adminUser.emailAddresses[0]?.emailAddress ?? 'admin'
+
+  await supabase.from('audit_logs').insert({
+    table_name: 'role_changes',
+    action: 'UPDATE',
+    record_id: targetUserId,
+    old_data: { role: targetRole, email: targetEmail, name: targetName },
+    new_data: { role: newRole, email: targetEmail, name: targetName },
+    user_email: adminEmail,
   })
 
   return NextResponse.json({ success: true })
