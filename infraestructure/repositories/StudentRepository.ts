@@ -11,7 +11,7 @@ export interface StudentRow {
 
 export class StudentRepository {
     async findAll(user: { email: string; role: string }): Promise<StudentRow[]> {
-        const supabase = getSupabaseAnonClient(user.email, user.role, user.email) // Usamos el email como userId para RLS
+        const supabase = getSupabaseAnonClient(user.email, user.role) // Usamos el email como userId para RLS
 
         const { data, error } = await supabase
             .from('students')
@@ -25,18 +25,16 @@ export class StudentRepository {
         return data as StudentRow[]
     }        
 
-    async updateDetail(studentId: number, detail: string): Promise<void> {
-       const supabase = getSupabaseClient() // Aquí se asume que el cliente ya tiene el JWT con los claims necesarios para RLS
-
-        //vector de ataque
-        //X', "name" = 'Hackeado' WHERE 1=1; --
-        const { error } = await supabase.rpc('actualizar_descripcion_segura', {
-          p_estudiante_id: studentId,
+ async updateDetail(studentId: number, detail: string, user: { email: string; role: string }): Promise<void> {
+    const supabase = getSupabaseAnonClient(user.email, user.role)  // usar anon con JWT
+    
+    const { error } = await supabase.rpc('actualizar_descripcion_segura', {
+        p_estudiante_id: studentId,
         p_nueva_descripcion: detail
- });
+    })
 
-        if (error) {
-            throw new Error(`Error al actualizar detalle del estudiante: ${error.message}`)
-       }
-  }   
+    if (error) {
+        throw new Error(`Error al actualizar detalle del estudiante: ${error.message}`)
+    }
+}  
 }

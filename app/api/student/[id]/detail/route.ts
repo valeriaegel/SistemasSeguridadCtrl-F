@@ -5,7 +5,7 @@ import { PERMISSIONS } from '@/app/lib/roles'
 
 const patchStudentDetailHandler = async (
     request: NextRequest,
-    _userInfo: UserInfo,
+    userInfo: UserInfo,
     { params }: { params: Promise<{ id: string }> }
 ): Promise<NextResponse> => {
     const { id } = await params
@@ -20,7 +20,12 @@ const patchStudentDetailHandler = async (
     }
 
     const handler = new UpdateStudentDetailHandler()
-    await handler.handle({ studentId, detail: body.detail })
+    await handler.handle({ 
+        studentId, 
+        detail: body.detail,
+        email: userInfo.email!,
+        role: userInfo.role
+    })
 
     return NextResponse.json({ success: true })
 }

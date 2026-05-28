@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS audit_logs (
     record_id text,
     old_data jsonb, -- El estado de la fila ANTES del cambio
     new_data jsonb, -- El estado de la fila DESPUÉS del cambio
-    clerk_user_id text, -- El ID del usuario que hizo el cambio
+    user_email text, -- Para saber quién hizo el cambio (extraído del JWT)
     created_at timestamptz DEFAULT now()
 );
 
@@ -25,27 +25,27 @@ USING ((auth.jwt() ->> 'user_role') = 'admin');
 CREATE OR REPLACE FUNCTION log_table_changes()
 RETURNS trigger AS $$
 DECLARE
-    v_clerk_id text;
+    v_user_email text; 
 BEGIN
-    -- Intentar extraer automáticamente el ID de Clerk desde el token de Supabase (sub)
-    v_clerk_id := auth.jwt() ->> 'sub';
+   
+    v_user_email := auth.jwt() ->> 'email';
 
     IF TG_OP = 'INSERT' THEN
-        INSERT INTO audit_logs (table_name, action, record_id, new_data, clerk_user_id)
-        VALUES (TG_TABLE_NAME, TG_OP, NEW.id::text, row_to_json(NEW)::jsonb, v_clerk_id);
+        INSERT INTO audit_logs (table_name, action, record_id, new_data, user_email)
+        VALUES (TG_TABLE_NAME, TG_OP, NEW.id::text, row_to_json(NEW)::jsonb, v_user_email);
         RETURN NEW;
         
     ELSIF TG_OP = 'UPDATE' THEN
         -- Solo registrar si realmente hubo un cambio en los datos
         IF row_to_json(OLD)::jsonb != row_to_json(NEW)::jsonb THEN
-            INSERT INTO audit_logs (table_name, action, record_id, old_data, new_data, clerk_user_id)
-            VALUES (TG_TABLE_NAME, TG_OP, NEW.id::text, row_to_json(OLD)::jsonb, row_to_json(NEW)::jsonb, v_clerk_id);
+            INSERT INTO audit_logs (table_name, action, record_id, old_data, new_data, user_email)
+            VALUES (TG_TABLE_NAME, TG_OP, NEW.id::text, row_to_json(OLD)::jsonb, row_to_json(NEW)::jsonb, v_user_email);
         END IF;
         RETURN NEW;
         
     ELSIF TG_OP = 'DELETE' THEN
-        INSERT INTO audit_logs (table_name, action, record_id, old_data, clerk_user_id)
-        VALUES (TG_TABLE_NAME, TG_OP, OLD.id::text, row_to_json(OLD)::jsonb, v_clerk_id);
+        INSERT INTO audit_logs (table_name, action, record_id, old_data, user_email)
+        VALUES (TG_TABLE_NAME, TG_OP, OLD.id::text, row_to_json(OLD)::jsonb, v_user_email);
         RETURN OLD;
     END IF;
 END;
