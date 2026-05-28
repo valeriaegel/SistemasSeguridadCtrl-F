@@ -64,19 +64,7 @@ export default function StudentsPage() {
                         
 
                         <div className="mt-2">
-                          <Guard 
-                            permission={PERMISSIONS.STUDENT_DNI_VIEW}
-                            fallback={
-                              <div className="flex items-center gap-2">
-                                <p className="text-sm text-zinc-500 dark:text-zinc-400">
-                                  DNI: ******** </p>
-                                <span className="text-red-500 text-xs font-medium flex items-center gap-1">
-                                  <EyeOff className="w-4 h-4" /> 
-                                  No tienes permiso para ver el DNI
-                                </span>
-                              </div>
-                            }
-                          >
+                         <Guard permission={PERMISSIONS.STUDENT_DNI_VIEW}>
                             <DniViewer studentId={student.id} />
                           </Guard>
                         </div>
