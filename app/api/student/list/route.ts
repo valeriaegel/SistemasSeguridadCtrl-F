@@ -1,36 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { auth } from '@clerk/nextjs/server' // <-- 1. Autenticación
-import { PERMISSIONS, hasPermission, UserRole } from '../../../lib/roles' // <-- 2. Autorización
+import { withPermission, UserInfo } from '@/app/lib/withPermission' 
+import { PERMISSIONS } from '@/app/lib/roles'
 import { GetStudentsListHandler, GetStudentsListQuery } from '@/application/query/GetStudentsListHandler'
 
-const getStudentsListQueryHandler = async (request: NextRequest): Promise<NextResponse> => {
+const getStudentsListQueryHandler = async (
+    request: NextRequest,
+    userInfo: UserInfo // Recibimos la info del usuario con permisos ya validados desde withPermission
+): Promise<NextResponse> => {
     try {
-        // BLOQUE DE SEGURIDAD
-        const { userId, sessionClaims } = await auth()
-
-        if (!userId) {
-            return NextResponse.json({ error: "Debes iniciar sesión" }, { status: 401 })
-        }
-
-        const role = sessionClaims?.metadata?.role as UserRole
-
-        // Verificamos si tiene alguno de los dos permisos válidos para listar alumnos
-        const isTeacher = hasPermission(role, PERMISSIONS.VIEW_ALL_STUDENTS)
-        const isAdmin = hasPermission(role, PERMISSIONS.VIEW_ALL_STUDENTS)
-
-        if (!isTeacher && !isAdmin) {
-            return NextResponse.json(
-                { error: "No tienes permiso para ver el directorio de alumnos" },
-                { status: 403 }
-            )
-        }
-        // FIN DEL BLOQUE DE SEGURIDAD 
-
         const handler = new GetStudentsListHandler()
- 
+
+        // Usamos directamente el email y el rol que ya vienen validados desde withPermission
         const query: GetStudentsListQuery = {
-            // requesterId: userId,
-            // requesterRole: role
+            requesterId: userInfo.email ?? '', 
+            requesterRole: userInfo.role
         }
         
         const response = await handler.handle(query)
@@ -46,4 +29,5 @@ const getStudentsListQueryHandler = async (request: NextRequest): Promise<NextRe
     }
 }
 
-export const GET = getStudentsListQueryHandler
+// Protegemos la ruta para que solo quienes tengan este permiso puedan entrar
+export const GET = withPermission(PERMISSIONS.VIEW_ALL_STUDENTS, getStudentsListQueryHandler)
