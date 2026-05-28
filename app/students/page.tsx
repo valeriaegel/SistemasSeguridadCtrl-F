@@ -1,5 +1,5 @@
 "use client"
-
+import { EyeOff } from "lucide-react";
 import { useEffect, useState } from "react"
 import { useStudents } from "@/app/hooks/useStudents"
 import { useStudentsStore, Student } from "@/app/store/students"
@@ -62,13 +62,25 @@ export default function StudentsPage() {
                         <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">{student.name}</p>
                         <p className="text-sm text-zinc-500 dark:text-zinc-400">{student.email || `ID: ${student.id}`}</p>
                         
-                        {/* DNI Viewer */}
+
                         <div className="mt-2">
-                         <Guard permission={PERMISSIONS.STUDENT_DNI_VIEW}>
+                          <Guard 
+                            permission={PERMISSIONS.STUDENT_DNI_VIEW}
+                            fallback={
+                              <div className="flex items-center gap-2">
+                                <p className="text-sm text-zinc-500 dark:text-zinc-400">
+                                  DNI: ******** </p>
+                                <span className="text-red-500 text-xs font-medium flex items-center gap-1">
+                                  <EyeOff className="w-4 h-4" /> 
+                                  No tienes permiso para ver el DNI
+                                </span>
+                              </div>
+                            }
+                          >
                             <DniViewer studentId={student.id} />
                           </Guard>
-                          </div>
-
+                        </div>
+              
                         <Guard permission={PERMISSIONS.STUDENT_DETAIL_EDIT}
                           fallback={student.detail ? (
                             <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400 italic leading-relaxed">{student.detail}</p>
